@@ -6,5 +6,4 @@ in Robotstudio using UdPUc and Protobuf.
 Together with the program in Robotstudio, this program is used to control the motion of an ABB robotic arm with 
 External Guided Motion implemented.
 
-The program in Robotstudio can be found by following this link: 
-https://github.com/orjanmehre/Rapid_Program_Kinect.git
+The Pack and go file for the Robotstudio set up and source file is located in the folder Robotstudio
