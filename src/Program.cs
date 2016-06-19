@@ -4,11 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using abb.egm;
-using System.Diagnostics;
-using EgmSmallTest;
-
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // Sample program using protobuf-csharp-port 
@@ -23,45 +18,14 @@ using EgmSmallTest;
 // 7) Install protobuf-csharp via NuGet, select in Visual Studio, Tools Nuget Package Manager and then Package Manager Console and type PM>Install-Package Google.ProtocolBuffers
 // 8) Add the generated file egm.cs to the Visual Studio project (add existing item)
 // 9) Copy the code below and then compile, link and run.
-//
-// Copyright (c) 2014, ABB
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with
-// or without modification, are permitted provided that 
-// the following conditions are met:
-//
-//    * Redistributions of source code must retain the 
-//      above copyright notice, this list of conditions 
-//      and the following disclaimer.
-//    * Redistributions in binary form must reproduce the 
-//      above copyright notice, this list of conditions 
-//      and the following disclaimer in the documentation 
-//      and/or other materials provided with the 
-//      distribution.
-//    * Neither the name of ABB nor the names of its 
-//      contributors may be used to endorse or promote 
-//      products derived from this software without 
-//      specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
-// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
+//////////////////////////////////////////////////////////////////////////
 
-namespace egmtest
+namespace EgmSmallTest
 {
     class Program
     {
         // listen on this port for inbound messages
-        public static int _ipPortNumber = 6510;  
+        public static int IpPortNumber = 6510;  
 
         static void Main(string[] args)
         {
@@ -83,20 +47,19 @@ namespace egmtest
         private uint _seqNumber = 0;
 
         public float X { get; set; }
-        public float Y { get; set; }
+        public float Z { get; set; }
           
 
         public void SensorThread()
         {
-            // create an udp client and listen on any address and the port _ipPortNumber
-            _udpServer = new UdpClient(Program._ipPortNumber);
-            var remoteEP = new IPEndPoint(IPAddress.Any, Program._ipPortNumber);
+            // create an udp client and listen on any address and the port IpPortNumber
+            _udpServer = new UdpClient(Program.IpPortNumber);
+            var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
 
             while (_exitThread == false)
             {
-                
                 // get the message from robot
-                var data = _udpServer.Receive(ref remoteEP);
+                var data = _udpServer.Receive(ref remoteEp);
 
                 if (data != null)
                 {
@@ -115,12 +78,9 @@ namespace egmtest
                         EgmSensor sensorMessage = sensor.Build();
                         sensorMessage.WriteTo(memoryStream);
 
-                        //Debug.WriteLine(sensorMessage); //To read message from sensor
-                        Debug.WriteLine("X from kinect " + this.X / 2);
-                        Debug.WriteLine("Y from kinect " + this.Y / 2);
                         // send the udp message to the robot
                         int bytesSent = _udpServer.Send(memoryStream.ToArray(),
-                                                       (int)memoryStream.Length, remoteEP);
+                                                       (int)memoryStream.Length, remoteEp);
                         if (bytesSent < 0)
                         {
                             Console.WriteLine("Error send to robot");
@@ -162,10 +122,11 @@ namespace egmtest
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
   
+            // Dividing X and Y by two to avoid sending targets outside the robots reach
             pc.SetX(Convert.ToInt32(this.X / 2))
               .SetY(0)
-              .SetZ(Convert.ToInt32(this.Y/2));
-
+              .SetZ(Convert.ToInt32(this.Z/2));
+            
             pq.SetU0(0.0)
               .SetU1(0.0)
               .SetU2(0.0)
@@ -192,9 +153,7 @@ namespace egmtest
         {
             _exitThread = true;
             _sensorThread.Abort();
-        }
-
-        
+        }  
     }
     
 }
