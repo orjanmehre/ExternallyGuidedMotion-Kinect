@@ -5,10 +5,10 @@
 ## Visual Studio
 
 **Install the missing refrences:** 
-1. Google.ProtocolBuffers.ddl
-2. Google.ProtocolBuffers.Serialization.dll
-3. System.Windows.dll
-4. EgmSmallTest.dll
+Google.ProtocolBuffers.ddl, 
+Google.ProtocolBuffers.Serialization.dll, 
+System.Windows.dll, 
+EgmSmallTest.dll
 
 
 ## RobotStudio
